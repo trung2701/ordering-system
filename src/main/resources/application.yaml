@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: coffee-ordering-system
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order?stringtype=unspecified
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000  # 30 seconds
+      connection-timeout: 20000  # 20 seconds
+      max-lifetime: 1800000  # 30 minutes
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    baselineOnMigrate: true
+    locations: classpath:db/migration
+    enabled: true
+
+order-service:
+  local-config: true
+  payment-request-topic-name: payment-request
+  payment-response-topic-name: payment-response
+  order-approval-request-topic-name: order-approval-request
+  order-approval-response-topic-name: order-approval-response
+  customer-topic-name: customer
+  outbox-scheduler-fixed-rate: 10000
+  outbox-scheduler-initial-delay: 10000
+
+kafka-config:
+  bootstrap-servers: localhost:9092
+
+kafka-producer-config:
+  key-serializer-class: org.apache.kafka.common.serialization.StringSerializer
+  value-serializer-class: org.springframework.kafka.support.serializer.JsonSerializer
+
+kafka-consumer-config:
+  key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  payment-consumer-group-id: payment-topic-consumer
+  payment-consumer-simulator-group-id: payment-simulator-topic-consumer
+  order-approval-consumer-group-id: order-approval-topic-consumer
+  order-approval-consumer-simulator-group-id: order-approval-simulator-topic-consumer
+  customer-group-id: customer-topic-consumer
