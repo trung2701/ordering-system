@@ -26,6 +26,7 @@ spring:
     locations: classpath:db/migration
     enabled: true
 
+
 order-service:
   local-config: true
   payment-request-topic-name: payment-request
